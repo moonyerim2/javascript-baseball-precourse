@@ -1,4 +1,4 @@
-import 
+import { constants } from "./constants/index.js";
 
 export default class BaseballGame {
   cunstructor() {
@@ -7,8 +7,7 @@ export default class BaseballGame {
   }
 
   generateRandomNumber() {
-    const randomNumber = MissionUtils.Random.pickUniqueNumbersInRange(MIN_NUMBER, MAX_NUMBER, 3);
+    const randomNumber = MissionUtils.Random.pickUniqueNumbersInRange(constants.MIN_OF_RANGE, constants.MAX_OF_RANGE, constants.INPUT_LENGTH);
     return randomNumber;
   }
 }
-
