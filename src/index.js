@@ -1,4 +1,5 @@
 import { constants } from "./constants/index.js";
+import Validator from "./valid/index.js";
 
 export default class BaseballGame {
   constructor() {
@@ -23,5 +24,17 @@ export default class BaseballGame {
         return;
       }
     }
+  }
+
+  isValid(value) {
+    const validator = new Validator(value, this.constrains);
+    return validator.isLengthCorrect() && validator.isNumber() && !validator.isDuplicated() && !validator.isZero();
+  }
+
+  getUserInput(userInput) {
+    if (!this.isValid(userInput)) {
+      alert("1~9까지의 수로 이루어진 중복없는 숫자를 입력해 주세요.");
+    }
+    this.userInput = userInput;
   }
 }

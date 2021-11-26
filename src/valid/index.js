@@ -1,9 +1,9 @@
 export default class Validator {
-  constructor(constrains) {
-      this.value = constrains.value;
-      this.max = constrains.max;
-      this.min = constrains.min;
-      this.length = constrains.length;
+  constructor(value, constrains) {
+    this.value = value;
+    this.max = constrains.max;
+    this.min = constrains.min;
+    this.length = constrains.length;
   }
 
   isNumber() {
