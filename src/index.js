@@ -1,13 +1,27 @@
 import { constants } from "./constants/index.js";
 
 export default class BaseballGame {
-  cunstructor() {
-    this.computerInputNumbers = [];
-    this.userInputNumbers = [];
+  constructor() {
+    this.computerInput = "";
+    this.userInput = "";
+    this.constrains = {
+      max: constants.MAX_OF_RANGE,
+      min: constants.MIN_OF_RANGE,
+      length: constants.INPUT_LENGTH,
+    };
   }
 
-  generateRandomNumber() {
-    const randomNumber = MissionUtils.Random.pickUniqueNumbersInRange(constants.MIN_OF_RANGE, constants.MAX_OF_RANGE, constants.INPUT_LENGTH);
-    return randomNumber;
+  generateComputerInput() {
+    const randomNumbers = new Set();
+
+    while (true) {
+      const randomNumber = MissionUtils.Random.pickNumberInRange(this.constrains.min, this.constrains.max);
+      randomNumbers.add(randomNumber);
+
+      if (randomNumbers.size === this.constrains.length) {
+        this.computerInput = [...randomNumbers].join("");
+        return;
+      }
+    }
   }
 }
