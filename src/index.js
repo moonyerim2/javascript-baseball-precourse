@@ -1,5 +1,6 @@
 import { constants } from "./constants/index.js";
 import Validator from "./valid/index.js";
+import ViewManager from "./views/index.js";
 
 export default class BaseballGame {
   constructor() {
@@ -38,7 +39,9 @@ export default class BaseballGame {
   getUserInput(userInput) {
     if (!this.isValid(userInput)) {
       alert("1~9까지의 수로 이루어진 중복없는 숫자를 입력해 주세요.");
+      return;
     }
+
     this.userInput = userInput.split("");
   }
 
@@ -57,18 +60,43 @@ export default class BaseballGame {
     });
   }
 
-  play() {
-    const $userInput = document.querySelector("#user-input");
-    const $submitBtn = document.querySelector("#submit");
+  calculateResult() {
+    const ballCount = this.gameResult.ball;
+    const strikeCount = this.gameResult.strike;
+    let resultTxt = `${ballCount}볼 ${strikeCount}스트라이크`;
 
-    this.generateComputerInput();
+    if (ballCount === 0 && strikeCount === 0) {
+      resultTxt = `낫싱`;
+    } else if (ballCount === 0) {
+      resultTxt = `${strikeCount}스트라이크`;
+    } else if (strikeCount === 0) {
+      resultTxt = `${ballCount}볼`;
+    }
 
-    $submitBtn.addEventListener("click", e => {
-      e.preventDefault();
-      const inputText = $userInput.value;
-      this.getUserInput(inputText);
-      this.compareInputs();
-    });
+    return resultTxt;
   }
+
+  play(inputText) {
+    this.generateComputerInput();
+    this.getUserInput(inputText);
+
+    if (!this.userInput.length) {
+      return;
+    }
+    this.compareInputs();
+    const resultTxt = this.calculateResult();
+
+    return resultTxt;
+  }
+
 }
 
+const game = new BaseballGame();
+console.log(game.play("457"));
+
+// $submitBtn.addEventListener("click", e => {
+//   e.preventDefault();
+//   const inputText = $userInput.value;
+//   this.getUserInput(inputText);
+//   this.compareInputs();
+// });
