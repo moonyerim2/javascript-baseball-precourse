@@ -1,48 +1,20 @@
-import { constants } from "./constants/index.js";
-import Validator from "./valid/index.js";
 import ViewManager from "./views/index.js";
+import ComputerInputGenerator from "./computer/index.js";
+import UserInputGetter from "./user/index.js";
 
 export default class BaseballGame {
   constructor() {
-    this.computerInput = [];
+    this.computerInput = new ComputerInputGenerator().conputerInput;
     this.userInput = [];
-    this.constrains = {
-      max: constants.MAX_OF_RANGE,
-      min: constants.MIN_OF_RANGE,
-      length: constants.INPUT_LENGTH,
-    };
     this.gameResult = {
       strike: 0,
       ball: 0,
     };
   }
 
-  generateComputerInput() {
-    const randomNumbers = new Set();
-
-    while (true) {
-      const randomNumber = MissionUtils.Random.pickNumberInRange(this.constrains.min, this.constrains.max);
-      randomNumbers.add(String(randomNumber));
-
-      if (randomNumbers.size === this.constrains.length) {
-        this.computerInput = [...randomNumbers];
-        return;
-      }
-    }
-  }
-
-  isValid(value) {
-    const validator = new Validator(value, this.constrains);
-    return validator.isLengthCorrect() && validator.isNumber() && !validator.isDuplicated() && !validator.isZero();
-  }
-
   getUserInput(userInput) {
-    if (!this.isValid(userInput)) {
-      alert("1~9까지의 수로 이루어진 중복없는 숫자를 입력해 주세요.");
-      return;
-    }
-
-    this.userInput = userInput.split("");
+    const userInputGetter = new UserInputGetter(userInput);
+    this.userInput = userInputGetter.getUserInput();
   }
 
   compareInputs() {
@@ -76,10 +48,12 @@ export default class BaseballGame {
     return resultTxt;
   }
 
-  play(inputText) {
-    this.generateComputerInput();
-    this.getUserInput(inputText);
+  resetGameResult() {
+    this.gameResult.strike = 0;
+    this.gameResult.ball = 0;
+  }
 
+  play() {
     if (!this.userInput.length) {
       return;
     }
@@ -89,14 +63,48 @@ export default class BaseballGame {
     return resultTxt;
   }
 
+  renderResult(resultTxt) {
+    if (resultTxt !== undefined) {
+      const view = new ViewManager(resultTxt);
+      view.renderResult();
+    }
+  }
+
+  onSubmitEvent() {
+    const $userInput = document.querySelector("#user-input");
+    const $submitBtn = document.querySelector("#submit");
+
+    $submitBtn.addEventListener("click", e => {
+      e.preventDefault();
+      const inputText = $userInput.value;
+      this.getUserInput(inputText);
+
+      const resultTxt = this.play();
+      this.renderResult(resultTxt);
+      this.resetGameResult();
+    });
+  }
+
+  onRestartEvent() {
+    const $result = document.querySelector("#result");
+    const $userInput = document.querySelector("#user-input");
+
+    $result.addEventListener("click", e => {
+      if (e.target.id === "game-restart-button") {
+        this.computerInput = new ComputerInputGenerator().conputerInput;
+        this.userInput = [];
+
+        $result.innerText = "";
+        $userInput.value = "";
+      }
+    });
+  }
+
+  init() {
+    this.onSubmitEvent();
+    this.onRestartEvent();
+  }
 }
 
 const game = new BaseballGame();
-console.log(game.play("457"));
-
-// $submitBtn.addEventListener("click", e => {
-//   e.preventDefault();
-//   const inputText = $userInput.value;
-//   this.getUserInput(inputText);
-//   this.compareInputs();
-// });
+game.init();
